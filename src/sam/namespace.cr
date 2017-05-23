@@ -4,8 +4,21 @@ module Sam
     @parent : Namespace?
     @namespaces = {} of String => Namespace
     @tasks = {} of String => Task
+    @@description : String? = nil
 
     def initialize(@name, @parent)
+    end
+
+    def path
+      if @parent
+        @parent.not_nil!.path + @name + ":"
+      else
+        ""
+      end
+    end
+
+    def desc(description : String)
+      @@description = description
     end
 
     def namespace(name)
@@ -17,7 +30,8 @@ module Sam
     end
 
     def task(name, dependencies = [] of String, &block : Task, Args -> Void)
-      @tasks[name] = Task.new(block, dependencies, self)
+      @tasks[name] = Task.new(block, dependencies, self, name, @@description)
+      @@description = nil
     end
 
     def namespaces(name)
@@ -26,6 +40,12 @@ module Sam
 
     def tasks(name)
       @tasks[name]?
+    end
+
+    def all_tasks
+      tasks = @tasks.values
+      @namespaces.each { |name, n| tasks = tasks + n.all_tasks }
+      tasks
     end
 
     def find(path)

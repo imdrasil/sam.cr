@@ -1,1 +1,3 @@
 language: crystal
+before_script:
+  - crystal examples/sam.cr -- prepare

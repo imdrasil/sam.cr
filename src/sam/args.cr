@@ -34,10 +34,14 @@ module Sam
 
     def [](index : Int32)
       @arr[index]
+    rescue e
+      raise ArgumentError.new("Missing argument with index #{index}")
     end
 
     def [](name : String | Symbol)
       @named_args[name.to_s]
+    rescue e
+      raise ArgumentError.new("Missing argument with name #{name}")
     end
 
     def []?(index : Int32) : ALLOWED_TYPES | Nil

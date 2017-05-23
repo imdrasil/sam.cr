@@ -8,8 +8,13 @@ module Sam
     with n yield
   end
 
-  def self.task(name : String, deps = [] of String)
-    @@root_namespace.task(name, deps)
+  def self.desc(description)
+    @@root_namespace.desc(description)
+  end
+
+  # delegates call to root namespace
+  def self.task(name, dependencies = [] of String, &block : Task, Args -> Void)
+    @@root_namespace.task(name, dependencies, &block)
   end
 
   def self.invoke(name)
@@ -48,15 +53,38 @@ module Sam
     else
       puts "Hm, nothing to do"
     end
+  rescue e
+    puts e.backtrace.join("\n")
+    puts e
+    exit(1)
+  end
+
+  def self.pretty_print
+    descs = [] of String
+    tasks = @@root_namespace.all_tasks
+    pathes = tasks.map(&.path)
+    max_length = pathes.map(&.size).max
+    puts "Tasks:"
+    puts "-" * (max_length + 2) + ":" + "-" * 20
+    tasks.each_with_index do |task, i|
+      puts pathes[i].ljust(max_length + 5) + task.description
+    end
   end
 end
 
-macro load_dependencies(libraries)
-  load_dependencies("./", {{libraries}})
+macro load_dependencies(*libraries)
+  {% for l in libraries %}
+    require "{{l.id}}/sam"
+  {% end %}
 end
 
 macro load_dependencies(home_path, *libraries)
   {% for l in libraries %}
-    require "{{home_path.id}}lib/{{l.id}}/src/sam"
+    require "{{home_path.id}}/lib/{{l.id}}/src/sam"
   {% end %}
+end
+
+Sam.desc("Prints description for all tasks")
+Sam.task "help" do
+  Sam.pretty_print
 end

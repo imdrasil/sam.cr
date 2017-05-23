@@ -3,8 +3,21 @@ module Sam
     @parent : Namespace
     @deps : Array(String)
     @block : (-> Void) | (Task -> Void) | (Task, Args -> Void)
+    @description : String?
+    getter name : String
 
-    def initialize(@block, @deps, @parent)
+    def initialize(@block, @deps, @parent, @name)
+    end
+
+    def initialize(@block, @deps, @parent, @name, @description = nil)
+    end
+
+    def path
+      @parent.path + @name
+    end
+
+    def description
+      @description || ""
     end
 
     def call(args : Args)
@@ -17,7 +30,6 @@ module Sam
       when 2
         @block.as(Task, Args -> Void).call(self, args)
       end
-    rescue
     end
 
     def invoke(name, args : Args)

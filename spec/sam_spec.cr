@@ -17,7 +17,7 @@ describe Sam do
 
   describe "::find" do
     it "finds correct task by path" do
-      Sam.find("db:schema:load").should eq(tasks["load"])
+      Sam.find!("db:schema:load").name.should eq("load")
     end
   end
 
