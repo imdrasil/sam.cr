@@ -1,7 +1,6 @@
-# Sam
-> v0.2.0
+# Sam [![Build Status](https://travis-ci.org/imdrasil/sam.cr.svg)](https://travis-ci.org/imdrasil/sam.cr)
 
-Sam is a Make-like shard which allows to specify tasks like Ruby's Rake do using plain Crystal. It is thread safe but for now can't be used in production - to small test coverage.
+Sam is a Make-like shard which allows to specify tasks like Ruby's Rake do using plain Crystal.
 
 ## Installation
 
@@ -23,6 +22,7 @@ Create `sam.cr` file in your app root directory and paste next:
 # it will be needed to perform tasks
 Sam.namespace "db" do
   namespace "schema" do
+    desc "Outputs smth: requrie 2 named arguments"
     task "load" do |t, args|
       puts args["f1"]
       t.invoke("1")
@@ -60,7 +60,13 @@ Sam.help
 To ran any of this task open prompt in root location and paste:
 
 ```shell
-$> crystal sam.cr -- <your_task_path> [options]
+$ crystal sam.cr -- <your_task_path> [options]
+```
+
+To get list of all available tasks:
+
+```shell
+$ crystal sam.cr -- help
 ```
 
 Each tasks has own "path" which consists of namespace names and task name joined together by ":". 
@@ -74,7 +80,7 @@ Also tasks can accept space separated arguments from prompt. To pass named argum
 
 Also just array of arguments can be passed - just past everything needed without any flags anywhere:
 ```shell
-$> crystal sam.cr -- <your_task_path> first_raw_option "options with spaces"
+$ crystal sam.cr -- <your_task_path> first_raw_option "options with spaces"
 ```
 
 All arguments from prompt will be parsed as `String`.
@@ -87,9 +93,8 @@ crystal sam.cr -- db:schema:load -f1 asd
 
 To autoload Sam files from your dependencies - just past 
 ```crystal
-load_dependencies "./", "dep1", "dep2"`
+load_dependencies "dep1", "dep2"`
 ```
-where first argument is root location, next are names of your dependencies you want to load.
 
 #### Namespace
 
@@ -123,10 +128,14 @@ When task is invoked from other one provided path will float up through current 
  
  This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float32` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
 
-
 ## Development
 
-For now major functionality is ready but to few tests were added. So major task for next release will be increasing test coverage.
+For now major functionality is ready but too few tests were added. So major task for next release will be increasing test coverage.
+
+Before running tests call
+```shell
+$ crystal examples/sam.cr -- prepare
+```
 
 ## Contributing
 
