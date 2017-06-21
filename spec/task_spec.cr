@@ -7,6 +7,11 @@ describe Sam::Task do
   describe "#call" do
   end
 
-  describe "#invoke" do
+  describe "#find!" do
+    it "properly invokes task with same name as parent namespace" do
+      task = Sam.find!("db:schema:load")
+      task = task.find!("schema")
+      task.path.should eq("db:schema")
+    end
   end
 end

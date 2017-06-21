@@ -45,6 +45,10 @@ Sam.namespace "db" do
   end
 
   namespace "db" do
+    task "schema" do
+        puts "same as namespace"
+    end
+    
     task "migrate" do
       puts "migrate"
     end
@@ -91,6 +95,30 @@ So to invoke first task from example ("load") will be used next command:
 crystal sam.cr -- db:schema:load -f1 asd
 ```
 
+Makefile-like usage is supported. To autogenerate receipt just call
+
+```shell
+$ crystal sam.cr -- generate:makefile
+```
+
+This will allow to call tasks in the next way:
+
+```shell
+$ make sam some:task raw_arg1
+```
+
+But for named argument you need to add `--`
+
+```shell
+$ make sam db:shema:load -- -f1 asd
+```
+
+By default it will try to use your samfile in the app root. To override it pass proper way as second argument
+
+```shell
+$ crystal src/sam.cr -- generate:makefile "src/sam.cr"
+```
+
 To autoload Sam files from your dependencies - just past 
 ```crystal
 load_dependencies "dep1", "dep2"`
@@ -122,7 +150,7 @@ Another task could be invoked from current using `invoke` method. It has next si
 
 #### Routing
 
-When task is invoked from other one provided path will float up through current task namespace nesting and search given path on each level.
+When task is invoked from other one provided path will float up through current task namespace nesting and search given path on each level. Task could have same name as any existing namespace.
 
 #### Args
  
