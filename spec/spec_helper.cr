@@ -13,11 +13,16 @@ Sam.namespace "db" do
       t.invoke("db:db:migrate")
       t.invoke("db:ping")
       t.invoke("din:dong")
+      t.invoke("schema")
     end
 
     task "1" do
       puts "1"
     end
+  end
+
+  task "schema" do
+    puts "same as namespace"
   end
 
   namespace "db" do

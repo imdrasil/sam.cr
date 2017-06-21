@@ -1,7 +1,7 @@
 module Sam
   class Args
     alias ALLOWED_HASH = Hash(String, ALLOWED_TYPES)
-    alias ALLOWED_TYPES = String | Int32 | Float32
+    alias ALLOWED_TYPES = String | Int32 | Float64
 
     @arr = [] of ALLOWED_TYPES
     @named_args = {} of String => ALLOWED_TYPES

@@ -52,7 +52,7 @@ module Sam
       t.not_nil!.call(Args.new(Args::ALLOWED_HASH.new, args.to_a))
     end
 
-    private def find!(name)
+    def find!(name)
       t = @parent.find(name)
       raise "Task #{name} was not found" unless t
       t.not_nil!
