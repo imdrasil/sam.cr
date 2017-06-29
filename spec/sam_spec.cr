@@ -33,9 +33,11 @@ describe Sam do
           .PHONY: sam
           sam:
           \t$(CRYSTAL_BIN) run $(SAM_PATH) -- $(filter-out $@,$(MAKECMDGOALS))
+          %:
+          \t@:
           # === Sam shortcut\n
           FILE
-    makefile = "../Makefile"
+    makefile = "Makefile"
 
     it "creates new makefile" do
       begin

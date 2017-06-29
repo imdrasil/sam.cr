@@ -1,4 +1,4 @@
-# Sam [![Build Status](https://travis-ci.org/imdrasil/sam.cr.svg)](https://travis-ci.org/imdrasil/sam.cr)
+# Sam [![Build Status](https://travis-ci.org/imdrasil/sam.cr.svg)](https://travis-ci.org/imdrasil/sam.cr) [![Latest Release](https://img.shields.io/github/release/imdrasil/sam.cr.svg)](https://github.com/imdrasil/sam.cr/releases)
 
 Sam is a Make-like shard which allows to specify tasks like Ruby's Rake do using plain Crystal.
 
