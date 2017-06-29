@@ -59,6 +59,12 @@ describe Sam do
     end
   end
 
+  describe "%load_dependencies" do
+    it "properly loads tasks from dependencies" do
+      Sam.find!("din:dong")
+    end
+  end
+
   it "includes all default tasks" do
     Sam.find!("help")
     Sam.find!("generate:makefile")
