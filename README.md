@@ -1,6 +1,6 @@
 # Sam [![Build Status](https://travis-ci.org/imdrasil/sam.cr.svg)](https://travis-ci.org/imdrasil/sam.cr) [![Latest Release](https://img.shields.io/github/release/imdrasil/sam.cr.svg)](https://github.com/imdrasil/sam.cr/releases)
 
-Sam is a Make-like shard which allows to specify tasks like Ruby's Rake do using plain Crystal.
+Sam is a Make-like utility which allows to specify tasks like Ruby's Rake do using plain Crystal.
 
 ## Installation
 
@@ -100,8 +100,7 @@ Makefile-like usage is supported. To autogenerate receipt just call
 ```shell
 $ crystal sam.cr -- generate:makefile
 ```
-
-This will allow to call tasks in the next way:
+This will modify existing Makefile or creates new one. Be carefull - this will silent all unexisting tasks. For more details take a look on template in code. This will allow to call tasks in the next way:
 
 ```shell
 $ make sam some:task raw_arg1
@@ -154,11 +153,9 @@ When task is invoked from other one provided path will float up through current 
 
 #### Args
  
- This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float32` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
+ This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float64` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
 
 ## Development
-
-For now major functionality is ready but too few tests were added. So major task for next release will be increasing test coverage.
 
 Before running tests call
 ```shell

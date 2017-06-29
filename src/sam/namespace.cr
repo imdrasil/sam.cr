@@ -13,6 +13,7 @@ module Sam
       if @parent
         @parent.not_nil!.path + @name + ":"
       else
+        # this is a root namespace
         ""
       end
     end
@@ -23,6 +24,7 @@ module Sam
 
     def namespace(name)
       with touch_namespace(name) yield
+      @namespaces[name]
     end
 
     def touch_namespace(name)
@@ -30,8 +32,9 @@ module Sam
     end
 
     def task(name, dependencies = [] of String, &block : Task, Args -> Void)
-      @tasks[name] = Task.new(block, dependencies, self, name, @@description)
+      task = (@tasks[name] = Task.new(block, dependencies, self, name, @@description))
       @@description = nil
+      task
     end
 
     def namespaces(name)
@@ -48,19 +51,21 @@ module Sam
       tasks
     end
 
-    def find(path)
-      parts = path.split(":")
-      count = parts.size
-      n = self
-      parts[0...-1].each do |name|
-        n = n.namespaces(name)
-        unless n
-          return @parent ? @parent.not_nil!.find(path) : nil
-        end
+    def find(path : String)
+      raise ArgumentError.new("Path can't be empty") if path.empty?
+      find(path.split(":"))
+    end
+
+    protected def find(path : Array(String))
+      if path.size == 1
+        t = tasks(path[0])
+        return t if t
+      else
+        n = namespaces(path[0])
+        t = n.try(&.find(path[1..-1]))
+        return t if t
       end
-      t = n.not_nil!.tasks(parts[-1])
-      return t if t
-      @parent ? @parent.not_nil!.find(path) : nil
+      @parent.try(&.find(path))
     end
   end
 end

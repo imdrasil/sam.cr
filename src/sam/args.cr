@@ -94,7 +94,6 @@ module Sam
       end
     end
 
-    private def option_value(str : Nil, same_string = true)
-    end
+    private def option_value(str : Nil, same_string = true); end
   end
 end

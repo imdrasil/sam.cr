@@ -9,11 +9,11 @@ Sam.task "prepare" do
   File.write(
     file,
     <<-DOC
-      Sam.namespace "din" do
-        task "dong" do
-          puts "dong"
-        end
+    Sam.namespace "din" do
+      task "dong" do
+        puts "dong"
       end
+    end
     DOC
   )
 end
