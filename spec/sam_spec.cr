@@ -2,9 +2,13 @@ require "./spec_helper"
 
 describe Sam do
   describe "::namespace" do
+    pending "add" do
+    end
   end
 
   describe "::task" do
+    pending "add" do
+    end
   end
 
   describe "::invoke" do
@@ -22,6 +26,33 @@ describe Sam do
   end
 
   describe "::help" do
+    pending "add" do
+    end
+  end
+
+  describe "::process_tasks" do
+    context "one task" do
+      it "executes given task" do
+        Sam.process_tasks(["db:schema"])
+        Container.tasks.should eq(["db:schema"])
+      end
+    end
+
+    context "multiple tasks" do
+      context "without arguments" do
+        it "executes all of them" do
+          Sam.process_tasks(["db:schema", "@", "db:ping"])
+          Container.tasks.should eq(["db:schema", "db:ping"])
+        end
+      end
+
+      context "with arguments" do
+        it "executes them and pass arguments" do
+          Sam.process_tasks(["db:schema", "@", "db:with_argument", "f1=2"])
+          Container.tasks.should eq(["db:schema", "db:with_argument"])
+        end
+      end
+    end
   end
 
   describe ".generate_makefile" do
