@@ -93,8 +93,28 @@ describe Sam do
   end
 
   describe "%load_dependencies" do
-    it "properly loads tasks from dependencies" do
-      Sam.find!("din:dong")
+    context "given as splat array" do
+      it "properly loads tasks from dependencies" do
+        Sam.find!("din:dong")
+      end
+    end
+
+    context "given as names tuple" do
+      context "with single dependecy passed as string" do
+        it "properly loads and executes task" do
+          Sam.invoke("lib2:special")
+          Container.tasks.should eq(["lib2:special"])
+        end
+      end
+
+      context "with several dependencies" do
+        context "with leading /" do
+          it "properly loads nested task" do
+            Sam.invoke("lib3:special")
+            Container.tasks.should eq(["lib3:special"])
+          end
+        end
+      end
     end
   end
 

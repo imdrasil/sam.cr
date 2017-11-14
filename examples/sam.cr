@@ -1,13 +1,22 @@
 require "../src/sam"
 require "file_utils"
 
-Sam.task "prepare" do
-  path = "./lib/asd/src/asd"
-  file = File.join(path, "sam.cr")
-  next if File.exists?(file)
-  FileUtils.mkdir_p(path)
+class Container
+  def self.add(a); end
+end
+
+Sam.task "setup" do
+  lib1 = "./lib/lib1/src/lib1"
+  lib2 = "./lib/lib2/src/lib2"
+  lib3 = "./lib/lib3/src/lib3"
+  sam_file1 = File.join(lib1, "sam.cr")
+  next if File.exists?(sam_file1)
+
+  # lib1
+
+  FileUtils.mkdir_p(lib1)
   File.write(
-    file,
+    sam_file1,
     <<-DOC
     Sam.namespace "din" do
       task "dong" do
@@ -17,6 +26,60 @@ Sam.task "prepare" do
     end
     DOC
   )
+
+  # lib2
+
+  FileUtils.mkdir_p(lib2)
+  tasks_path = File.join(lib2, "tasks")
+  FileUtils.mkdir_p(tasks_path)
+  File.write(
+    File.join(tasks_path, "special.cr"),
+    <<-SAM
+    Sam.namespace "lib2" do
+      task "special" do |t|
+        Container.add(t.path)
+      end
+    end
+    SAM
+  )
+  File.write(
+    File.join(lib2, "sam.cr"),
+    <<-SAM
+    Sam.namespace "lib2" do
+      task "common" do |t|
+        Container.add(t.path)
+      end
+    end
+    SAM
+  )
+
+  # lib3
+
+  FileUtils.mkdir_p(lib3)
+  File.write(
+    File.join(lib3, "sam.cr"),
+    <<-SAM
+    Sam.namespace "lib3" do
+      task "common" do |t|
+        Container.add(t.path)
+      end
+    end
+    SAM
+  )
+  File.write(
+    File.join(lib3, "special.cr"),
+    <<-SAM
+    Sam.namespace "lib3" do
+      task "special" do |t|
+        Container.add(t.path)
+      end
+    end
+    SAM
+  )
+end
+
+Sam.task "clear" do
+  FileUtils.rm_r("./lib")
 end
 
 Sam.namespace "db" do
