@@ -1,6 +1,8 @@
 require "./sam/*"
 
 module Sam
+  TASK_SEPARATOR = "@"
+
   @@root_namespace = Namespace.new("root", nil)
 
   def self.namespace(name : String)
@@ -49,14 +51,29 @@ module Sam
 
   def self.help
     if ARGV.size > 0
-      Sam.invoke(ARGV[0], ARGV[1..-1])
+      process_tasks(ARGV)
     else
-      puts "Hm, nothing to do"
+      puts "Hm, nothing to do..."
     end
   rescue e
     puts e.backtrace.join("\n")
     puts e
     exit(1)
+  end
+
+  def self.process_tasks(args)
+    separator_indexes = args.map_with_index { |a, i| i if a == TASK_SEPARATOR }.compact
+    sets = [] of Array(String)
+    previous_index = 0
+    separator_indexes.each do |i|
+      sets << args[previous_index...i]
+      previous_index = i + 1
+    end
+    sets << args[previous_index..-1]
+
+    sets.each do |set|
+      Sam.invoke(set[0], set[1..-1])
+    end
   end
 
   def self.pretty_print

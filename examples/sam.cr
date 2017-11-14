@@ -12,6 +12,7 @@ Sam.task "prepare" do
     Sam.namespace "din" do
       task "dong" do
         puts "dong"
+        Container.add("din:dong")
       end
     end
     DOC

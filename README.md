@@ -123,6 +123,14 @@ To autoload Sam files from your dependencies - just past
 load_dependencies "dep1", "dep2"`
 ```
 
+To execute multiple tasks at once just list them separted by `@` character:
+
+```crystal
+$ crystal sam.cr -- namespace1:task1 arg1=2 @ other_task arg1=3
+```
+
+Each task will be executed only if the previous one is successfully finished (without throwing any exception).
+
 #### Namespace
 
 To define namespace (for now they only used for namespacing tasks) use `Sam.namespace` (opens `root` namespace) or just `namespace` inside of it. `Sam.namespace` can be called any times - everything will be added to existing staff.
