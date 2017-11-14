@@ -130,9 +130,23 @@ macro load_dependencies(*libraries)
   {% end %}
 end
 
-macro load_dependencies(home_path, *libraries)
+macro load_dependencies(*libraries, **dependencies)
   {% for l in libraries %}
     require "{{home_path.id}}/lib/{{l.id}}/src/sam"
+  {% end %}
+
+  {% for l, deps in dependencies %}
+    require "{{l.id}}/sam"
+
+    {% if deps.is_a?(StringLiteral) %}
+      {% prefix = deps.starts_with?("/") ? "" : "/tasks/" %}
+      require "{{l.id}}{{prefix.id}}{{deps.id}}"
+    {% else %}
+      {% for dep in deps %}
+        {% prefix = dep.starts_with?("/") ? "" : "/tasks/" %}
+        require "{{l.id}}{{prefix.id}}{{dep.id}}"
+      {% end %}
+    {% end %}
   {% end %}
 end
 

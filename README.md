@@ -123,6 +123,14 @@ To autoload Sam files from your dependencies - just past
 load_dependencies "dep1", "dep2"`
 ```
 
+If library provides some optional files with tasks they could be laod as well using named tuple  literal:
+
+```crystal
+load_dependencies "lib1", "lib2": "special_file", "lib3": ["special_file"], "lib3": ["/root_special_file"]
+```
+
+By default any nested dependency will be loaded from "tasks" folder at the lib root level. Any dependecy with leading "/" makes to load them using given path. So `root_special_file` for `lib3` will be loaded with `lib3/src/lib3/root_special_file.cr`.
+
 To execute multiple tasks at once just list them separted by `@` character:
 
 ```crystal
@@ -167,7 +175,7 @@ When task is invoked from other one provided path will float up through current 
 
 Before running tests call
 ```shell
-$ crystal examples/sam.cr -- prepare
+$ crystal examples/sam.cr -- setup
 ```
 
 ## Contributing

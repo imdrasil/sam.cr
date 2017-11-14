@@ -1,7 +1,8 @@
 require "spec"
 require "../src/sam"
 
-load_dependencies "asd"
+load_dependencies "lib1"
+load_dependencies "lib2": "special", "lib3": ["/special"]
 
 class Container
   @@executed_tasks = [] of String
