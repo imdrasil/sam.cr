@@ -39,7 +39,7 @@ describe Sam::Task do
         arr = [] of Int32
         namespace.task("t2") { 1 / 0 }
         t = namespace.task("t3", ["t2", "t1"]) { arr << 3 }
-        expect_raises do
+        expect_raises(DivisionByZeroError) do
           t.call(Sam::Args.new)
         end
         arr.empty?.should eq(true)
