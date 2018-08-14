@@ -79,12 +79,12 @@ module Sam
   def self.pretty_print
     descs = [] of String
     tasks = @@root_namespace.all_tasks
-    pathes = tasks.map(&.path)
-    max_length = pathes.map(&.size).max
+    paths = tasks.map(&.path)
+    max_length = paths.map(&.size).max
     puts "Tasks:"
     puts "-" * (max_length + 2) + ":" + "-" * 20
     tasks.each_with_index do |task, i|
-      puts pathes[i].ljust(max_length + 5) + task.description
+      puts paths[i].ljust(max_length + 5) + task.description
     end
   end
 

@@ -16,13 +16,14 @@ dependencies:
 
 ### Simple example
 
-Create `sam.cr` file in your app root directory and paste next: 
+Create `sam.cr` file in your app root directory and paste next:
+
 ```crystal
-# here you should load your app configuration if 
+# here you should load your app configuration if
 # it will be needed to perform tasks
 Sam.namespace "db" do
   namespace "schema" do
-    desc "Outputs smth: requrie 2 named arguments"
+    desc "Outputs smth: requires 2 named arguments"
     task "load" do |t, args|
       puts args["f1"]
       t.invoke("1")
@@ -48,7 +49,7 @@ Sam.namespace "db" do
     task "schema" do
         puts "same as namespace"
     end
-    
+
     task "migrate" do
       puts "migrate"
     end
@@ -73,7 +74,7 @@ To get list of all available tasks:
 $ crystal sam.cr -- help
 ```
 
-Each tasks has own "path" which consists of namespace names and task name joined together by ":". 
+Each tasks has own "path" which consists of namespace names and task name joined together by ":".
 
 Also tasks can accept space separated arguments from prompt. To pass named argument (which have associated name) use next rules:
 
@@ -83,13 +84,14 @@ Also tasks can accept space separated arguments from prompt. To pass named argum
 - `name="value with spaces"`
 
 Also just array of arguments can be passed - just past everything needed without any flags anywhere:
+
 ```shell
 $ crystal sam.cr -- <your_task_path> first_raw_option "options with spaces"
 ```
 
-All arguments from prompt will be parsed as `String`.
+All arguments from prompt will be realized as `String`.
 
-So to invoke first task from example ("load") will be used next command:
+To invoke a task, e.g. the first task "load" from example above:
 
 ```shell
 crystal sam.cr -- db:schema:load -f1 asd
@@ -100,7 +102,8 @@ Makefile-like usage is supported. To autogenerate receipt just call
 ```shell
 $ crystal sam.cr -- generate:makefile
 ```
-This will modify existing Makefile or creates new one. Be carefull - this will silent all unexisting tasks. For more details take a look on template in code. This will allow to call tasks in the next way:
+
+This will modify existing Makefile or creates new one. Be careful - this will silent all nonexisting tasks. For more details take a look on template in code. This will allow to call tasks in the next way:
 
 ```shell
 $ make sam some:task raw_arg1
@@ -109,7 +112,7 @@ $ make sam some:task raw_arg1
 But for named argument you need to add `--`
 
 ```shell
-$ make sam db:shema:load -- -f1 asd
+$ make sam db:schema:load -- -f1 asd
 ```
 
 By default it will try to use your samfile in the app root. To override it pass proper way as second argument
@@ -118,22 +121,23 @@ By default it will try to use your samfile in the app root. To override it pass 
 $ crystal src/sam.cr -- generate:makefile "src/sam.cr"
 ```
 
-To autoload Sam files from your dependencies - just past 
+To autoload Sam files from your dependencies - just past
+
 ```crystal
 load_dependencies "dep1", "dep2"`
 ```
 
-If library provides some optional files with tasks they could be laod as well using named tuple  literal:
+If library provides some optional files with tasks they could be loaded as well using named tuple  literal:
 
 ```crystal
 load_dependencies "lib1", "lib2": "special_file", "lib3": ["special_file"], "lib3": ["/root_special_file"]
 ```
 
-By default any nested dependency will be loaded from "tasks" folder at the lib root level. Any dependecy with leading "/" makes to load them using given path. So `root_special_file` for `lib3` will be loaded with `lib3/src/lib3/root_special_file.cr`.
+By default any nested dependency will be loaded from "tasks" folder at the lib root level. Any dependency with leading "/" makes to load them using given path. So `root_special_file` for `lib3` will be loaded with `lib3/src/lib3/root_special_file.cr`.
 
-To execute multiple tasks at once just list them separted by `@` character:
+To execute multiple tasks at once just list them separated by `@` character:
 
-```crystal
+```shell
 $ crystal sam.cr -- namespace1:task1 arg1=2 @ other_task arg1=3
 ```
 
@@ -144,36 +148,40 @@ Each task will be executed only if the previous one is successfully finished (wi
 To define namespace (for now they only used for namespacing tasks) use `Sam.namespace` (opens `root` namespace) or just `namespace` inside of it. `Sam.namespace` can be called any times - everything will be added to existing staff.
 
 #### Task
+
 To define task use `task` method with it's name and block. Given block could take 0..2 arguments: `Task` object and `Args` object. Also as second parameter could be provided array of dependent tasks which will be invoked before current.
 
 Another task could be invoked from current using `invoke` method. It has next signatures:
 
-- 
-  - `name : String` - task path 
+-
+  - `name : String` - task path
 
-- 
+-
   - `name : String` - task path
   - `args : Args` - prepared argument object
 
-- 
+-
   - `name : String` - task path
   - `hash : Hash(String, String | Int32, Float32)` - hash with arguments
 
-- 
+-
   - `name : String` - task path
   - `args : Tuple` - raw arguments
+
+Any already invoked task is ignored during further invocations. To avoid this `#execute` method could be used.
 
 #### Routing
 
 When task is invoked from other one provided path will float up through current task namespace nesting and search given path on each level. Task could have same name as any existing namespace.
 
 #### Args
- 
- This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float64` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
+
+This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float64` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
 
 ## Development
 
 Before running tests call
+
 ```shell
 $ crystal examples/sam.cr -- setup
 ```
@@ -188,4 +196,4 @@ $ crystal examples/sam.cr -- setup
 
 ## Contributors
 
-- [imdrasil](https://github.com/[your-github-name]) Roman Kalnytskyi - creator, maintainer
+- [imdrasil](https://github.com/imdrasil/sam.cr) Roman Kalnytskyi - creator, maintainer
