@@ -1,9 +1,9 @@
 name: sam
-version: 0.2.4
+version: 0.3.0
 
 authors:
   - Roman Kalnytskyi <moranibaca@gmail.com>
 
-crystal: 0.23.1
+crystal: 0.26.0
 
 license: MIT

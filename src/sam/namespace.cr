@@ -18,10 +18,12 @@ module Sam
       end
     end
 
+    # Sets description to the next defined task.
     def desc(description : String)
       @@description = description
     end
 
+    # Defines nested namespace.
     def namespace(name)
       with touch_namespace(name) yield
       @namespaces[name]
@@ -31,6 +33,7 @@ module Sam
       @namespaces[name] ||= Namespace.new(name, self)
     end
 
+    # Defines new task.
     def task(name, dependencies = [] of String, &block : Task, Args -> Void)
       task = (@tasks[name] = Task.new(block, dependencies, self, name, @@description))
       @@description = nil
