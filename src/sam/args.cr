@@ -1,10 +1,15 @@
 module Sam
+  # This class presents container for the task arguments. It can handle named arguments and raw array of arguments.
+  # Now it supports only `String`, `Int32` and `Float64` as value types. To get access to named argument you
+  # can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)`
+  # and `[]?(index : Int32)` as well.
   class Args
-    alias ALLOWED_HASH = Hash(String, ALLOWED_TYPES)
-    alias ALLOWED_TYPES = String | Int32 | Float64
+    # :nodoc:
+    alias AllowedHash = Hash(String, AllowedTypes)
+    alias AllowedTypes = String | Int32 | Float64
 
-    @arr = [] of ALLOWED_TYPES
-    @named_args = {} of String => ALLOWED_TYPES
+    @arr = [] of AllowedTypes
+    @named_args = {} of String => AllowedTypes
 
     def initialize
     end
@@ -13,11 +18,11 @@ module Sam
       parse(args)
     end
 
-    def initialize(_named_args : ALLOWED_HASH, _arr = [] of ALLOWED_TYPES)
-      h = ALLOWED_HASH.new
-      _named_args.each { |k, v| h[k] = v.as(ALLOWED_TYPES) }
+    def initialize(_named_args : AllowedHash, _arr = [] of AllowedTypes)
+      h = AllowedHash.new
+      _named_args.each { |k, v| h[k] = v.as(AllowedTypes) }
       @named_args = h
-      @arr = _arr.map { |e| e.as(ALLOWED_TYPES) }
+      @arr = _arr.map { |e| e.as(AllowedTypes) }
     end
 
     def raw
@@ -44,11 +49,11 @@ module Sam
       raise ArgumentError.new("Missing argument with name #{name}")
     end
 
-    def []?(index : Int32) : ALLOWED_TYPES | Nil
+    def []?(index : Int32) : AllowedTypes | Nil
       @arr[index]?
     end
 
-    def []?(name : String | Symbol) : ALLOWED_TYPES | Nil
+    def []?(name : String | Symbol) : AllowedTypes | Nil
       @named_args[name.to_s]?
     end
 
