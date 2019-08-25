@@ -52,13 +52,13 @@ module Sam
       t.call(args)
     end
 
-    def invoke(name, hash : Args::ALLOWED_HASH)
+    def invoke(name, hash : Args::AllowedHash)
       t = find!(name)
       return if t.invoked?
-      t.call(Args.new(hash, [] of Args::ALLOWED_TYPES))
+      t.call(Args.new(hash, [] of Args::AllowedTypes))
     end
 
-    def invoke(name, hash : Args::ALLOWED_HASH, arr : Array(Args::ALLOWED_TYPES))
+    def invoke(name, hash : Args::AllowedHash, arr : Array(Args::AllowedTypes))
       t = find!(name)
       return if t.invoked?
       t.call(Args.new(hash, arr))
@@ -67,7 +67,7 @@ module Sam
     def invoke(name, *args)
       t = find!(name)
       return if t.invoked?
-      t.not_nil!.call(Args.new(Args::ALLOWED_HASH.new, args.to_a))
+      t.not_nil!.call(Args.new(Args::AllowedHash.new, args.to_a))
     end
 
     # Invoke the task even if it has been invoked.
@@ -75,16 +75,16 @@ module Sam
       find!(name).call(args)
     end
 
-    def execute(name, hash : Args::ALLOWED_HASH)
-      find!(name).call(Args.new(hash, [] of Args::ALLOWED_TYPES))
+    def execute(name, hash : Args::AllowedHash)
+      find!(name).call(Args.new(hash, [] of Args::AllowedTypes))
     end
 
-    def execute(name, hash : Args::ALLOWED_HASH, arr : Array(Args::ALLOWED_TYPES))
+    def execute(name, hash : Args::AllowedHash, arr : Array(Args::AllowedTypes))
       find!(name).call(Args.new(hash, arr))
     end
 
     def execute(name, *args)
-      find!(name).not_nil!.call(Args.new(Args::ALLOWED_HASH.new, args.to_a))
+      find!(name).not_nil!.call(Args.new(Args::AllowedHash.new, args.to_a))
     end
 
     def find!(name)

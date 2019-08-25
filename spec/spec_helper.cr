@@ -28,7 +28,7 @@ end
 
 # Tasks
 
-Sam.namespace "db" do
+namespace "db" do
   namespace "schema" do
     task "load" do |t, args|
       puts args["f1"]

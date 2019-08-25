@@ -1,6 +1,6 @@
 # Sam [![Build Status](https://travis-ci.org/imdrasil/sam.cr.svg)](https://travis-ci.org/imdrasil/sam.cr) [![Latest Release](https://img.shields.io/github/release/imdrasil/sam.cr.svg)](https://github.com/imdrasil/sam.cr/releases)
 
-Sam is a Make-like utility which allows to specify tasks like Ruby's Rake do using plain Crystal.
+Sam is a Make-like utility which allows to specify tasks like Ruby's Rake do using plain Crystal code. This allows you to reuse existing application code base and/or include tasks from your dependencies.
 
 ## Installation
 
@@ -12,171 +12,177 @@ dependencies:
     github: imdrasil/sam.cr
 ```
 
+After executing `shards install` Sam-file will be added to the root of your project (unless you already have one).
+
 ## Usage
 
-### Simple example
+### Task
 
-Create `sam.cr` file in your app root directory and paste next:
+Tasks are the main unit in `sam.cr`. Task has a name, a list of prerequisites and a list of actions (block of a code).
+
+Sam extends the global context with own DSL. To define a task use `task` method which accepts the task name as the 1st argument.
 
 ```crystal
-# here you should load your app configuration if
-# it will be needed to perform tasks
-Sam.namespace "db" do
-  namespace "schema" do
-    desc "Outputs smth: requires 2 named arguments"
-    task "load" do |t, args|
-      puts args["f1"]
-      t.invoke("1")
-      t.invoke("schema:1")
-      t.invoke("db:migrate")
-      t.invoke("db:db:migrate")
-      t.invoke("db:ping")
-      t.invoke("din:dong")
-      puts "------"
-      t.invoke("2", {"f2" => 1})
-    end
-
-    task "1" do
-      puts "1"
-    end
-
-    task "2", ["1", "db:migrate"] do |t, args|
-      puts args.named["f2"].as(Int32) + 3
-    end
-  end
-
-  namespace "db" do
-    task "schema" do
-        puts "same as namespace"
-    end
-
-    task "migrate" do
-      puts "migrate"
-    end
-  end
-
-  task "ping" do
-    puts "ping"
-  end
+task "name" do
 end
-Sam.help
 ```
 
-To ran any of this task open prompt in root location and paste:
+If you want to define prerequisites, add the array with their names as the 2nd argument:
+
+```crystal
+task "name", ["prereq1", "prereq2"] do
+end
+```
+
+#### Executing a task
+
+Sam does no magic with your `sam.cr` file - it is just a common `.cr` source file which allows you to recompile it with any possible code you want such amount of times you need. Therefore the most obvious way to execute any task is:
 
 ```shell
-$ crystal sam.cr -- <your_task_path> [options]
+$ crystal sam.cr -- name
 ```
 
-To get list of all available tasks:
+> `--` here means that `name` is passed as an argument to executed file not `crystal` utility.
+
+In addition to this you are able to configure your makefile to invoke sam tasks. This allows you to use shorten variant
 
 ```shell
-$ crystal sam.cr -- help
+$ make sam name
 ```
 
-Each tasks has own "path" which consists of namespace names and task name joined together by ":".
+> This solution still requires `--` in some cases - see the following section.
 
-Also tasks can accept space separated arguments from prompt. To pass named argument (which have associated name) use next rules:
-
-- `-name value`
-- `-name "value with spaces"`
-- `name=value`
-- `name="value with spaces"`
-
-Also just array of arguments can be passed - just past everything needed without any flags anywhere:
-
-```shell
-$ crystal sam.cr -- <your_task_path> first_raw_option "options with spaces"
-```
-
-All arguments from prompt will be realized as `String`.
-
-To invoke a task, e.g. the first task "load" from example above:
-
-```shell
-crystal sam.cr -- db:schema:load -f1 asd
-```
-
-Makefile-like usage is supported. To autogenerate receipt just call
+To automatically preconfigure makefile run
 
 ```shell
 $ crystal sam.cr -- generate:makefile
 ```
 
-This will modify existing Makefile or creates new one. Be careful - this will silent all nonexisting tasks. For more details take a look on template in code. This will allow to call tasks in the next way:
+This will modify existing Makefile or create new one. Be careful - this will silent all nonexisting makefile tasks on invocation.
+
+To see a list of all available tasks with their descriptions:
 
 ```shell
-$ make sam some:task raw_arg1
+$ crystal sam.cr -- help
 ```
 
-But for named argument you need to add `--`
+#### Tasks with arguments
+
+To pass arguments to your task just list them after it's name:
 
 ```shell
-$ make sam db:schema:load -- -f1 asd
+> crystal sam.cr -- name john rob ned
 ```
 
-By default it will try to use your samfile in the app root. To override it pass proper way as second argument
-
-```shell
-$ crystal src/sam.cr -- generate:makefile "src/sam.cr"
-```
-
-To autoload Sam files from your dependencies - just past
+They are passed to a task as a 2nd block argument.
 
 ```crystal
-load_dependencies "dep1", "dep2"`
+task "name" do |_, args|
+  puts args[0].as(String)
+end
 ```
 
-If library provides some optional files with tasks they could be loaded as well using named tuple  literal:
+`args` here is an instance of `Sam::Args` class that contains arguments and named arguments passed to each task. Any argument passed from a console is treated as a `String` but `Int32` and `Float64` values also can be specified during task invocation from inside of another one.
 
-```crystal
-load_dependencies "lib1", "lib2": "special_file", "lib3": ["special_file"], "lib3": ["/root_special_file"]
-```
+> Each task has own collection of arguments; only prerequisites shares with target task same `Args` instance.
 
-By default any nested dependency will be loaded from "tasks" folder at the lib root level. Any dependency with leading "/" makes to load them using given path. So `root_special_file` for `lib3` will be loaded with `lib3/src/lib3/root_special_file.cr`.
+As was mentioned named argument also can be specified by the following ways:
 
-To execute multiple tasks at once just list them separated by `@` character:
+- `-argument value`
+- `-argument "value with spaces"`
+- `argument=value`
+- `argument="value with spaces"`
+
+One important restriction with named arguments usage and makefile-style task invocation: `--` should be placed to explicitly specify that specified arguments belongs to compiled program not crystal compiler:
 
 ```shell
-$ crystal sam.cr -- namespace1:task1 arg1=2 @ other_task arg1=3
+$ make sam name john
+$ # but
+$ make same name -- argument=john
 ```
 
-Each task will be executed only if the previous one is successfully finished (without throwing any exception).
+More than one task can be specified (even with own arguments) - just separate them by `@` symbol:
 
-#### Namespace
+```shell
+$ crystal sam.cr -- name john @ surname argument=snow
+```
 
-To define namespace (for now they only used for namespacing tasks) use `Sam.namespace` (opens `root` namespace) or just `namespace` inside of it. `Sam.namespace` can be called any times - everything will be added to existing staff.
+#### Accessing tasks programmatically
 
-#### Task
+Sam allow you to invoke tasks within another ones and even passing own args object. To do this just call `#invoke` method with task name (and arguments if needed) on task object passed as 1st argument:
 
-To define task use `task` method with it's name and block. Given block could take 0..2 arguments: `Task` object and `Args` object. Also as second parameter could be provided array of dependent tasks which will be invoked before current.
+```crystal
+task "name" do |t|
+  t.invoke("surname")
+end
+
+task "surname" do
+  puts "Snow"
+end
+```
+
+If specified task was already invoked before - it will be ignored. To force task invocation - use `#execute`.
+
 
 Another task could be invoked from current using `invoke` method. It has next signatures:
 
--
-  - `name : String` - task path
+### Namespaces
 
--
-  - `name : String` - task path
-  - `args : Args` - prepared argument object
+as projects grow amount of defined tasks grow as well. To simplify navigation and increase readability tasks can be grouped in namespaces:
 
--
-  - `name : String` - task path
-  - `hash : Hash(String, String | Int32, Float32)` - hash with arguments
+```crystal
+namespace "main" do
+  task "build" do
+    # Build the main program
+  end
+end
 
--
-  - `name : String` - task path
-  - `args : Tuple` - raw arguments
+namespace "samples" do
+  task "build" do
+    # Build the sample programs
+  end
+end
 
-Any already invoked task is ignored during further invocations. To avoid this `#execute` method could be used.
+task "build", %w[main:build samples:build] do
+end
+```
 
-#### Routing
+#### Name resolution
 
-When task is invoked from other one provided path will float up through current task namespace nesting and search given path on each level. Task could have same name as any existing namespace.
+When task is invoked from other one, provided path will float up through current task namespace and search given task path on each level until top level. Task could have same name as any existing namespace.
 
-#### Args
+```crystal
+task "one" do
+end
 
-This class represents argument set for task. It can handle named arguments and just raw array of arguments. Now it supports only `String`, `Int32` and `Float64` types. To get access to named argument you can use `[](name : String)` and `[]?(name : String)` methods. For raw attributes there are `[](index : Int32)` and `[]?(index : Int32)` as well.
+namespace "one" do
+  namespace "two"
+    task "test" do |t|
+      t.invoke("one")
+    end
+  end
+end
+```
+
+In the example above next paths are checked (in given order):
+
+* `one:two:one`
+* `one:one`
+* `one` (as task not namespace)
+
+### Share tasks
+
+Sam tasks can be loaded from installed dependencies. To do this helper macro `load_dependencies` can be used:
+
+```crystal
+load_dependencies "lib1", "lib2"
+```
+
+This is translated to
+
+```crystal
+require "./lib/lib1/tasks/sam.cr"
+```
 
 ## Development
 
