@@ -38,7 +38,7 @@ describe Sam::Task do
 
       it "raises exception and not invokes if dependency raise exception" do
         arr = [] of Int32
-        namespace.task("t2") { 1 / 0 }
+        namespace.task("t2") { 1 // 0 }
         t = namespace.task("t3", ["t2"]) { arr << 3 }
         expect_raises(DivisionByZeroError) do
           t.call(empty_args)
