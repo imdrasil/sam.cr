@@ -32,7 +32,14 @@ module Sam
     # Launch current task. Prerequisites are invoked first.
     def call(args : Args)
       @invoked = true
-      @deps.each { |name| invoke(name) }
+      case @block.arity
+      when 0, 1
+        @deps.each { |name| invoke(name) }
+      when 2
+        @deps.each { |name| invoke(name, args) }
+      else
+        raise "Wrong task block arity - #{@block.arity} and maximum is 2."
+      end
       case @block.arity
       when 0
         @block.as(-> Void).call
