@@ -99,28 +99,28 @@ describe Sam::Task do
 
     it "accepts tuple at the end" do
       count = 0
-      namespace.task("t1") { |t, args| count += args[0].as(Int32) }
+      namespace.task("t1") { |_, args| count += args[0].as(Int32) }
       namespace.task("t2") { |t| t.invoke("t1", 1) }.call(empty_args)
       count.should eq(1)
     end
 
     it "accepts hash" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
       namespace.task("t2") { |t| t.invoke("t1", {"count" => 2}) }.call(empty_args)
       count.should eq(2)
     end
 
     it "accepts arg object" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
       namespace.task("t2") { |t, args| t.invoke("t1", args) }.call(Sam::Args.new({"count" => 2}))
       count.should eq(2)
     end
 
     it "accepts hash and array" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) + args[0].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) + args[0].as(Int32) }
       namespace.task("t2") { |t| t.invoke("t1", {"count" => 2}, [1]) }.call(empty_args)
       count.should eq(3)
     end
@@ -143,28 +143,28 @@ describe Sam::Task do
 
     it "accepts tuple at the end" do
       count = 0
-      namespace.task("t1") { |t, args| count += args[0].as(Int32) }
+      namespace.task("t1") { |_, args| count += args[0].as(Int32) }
       namespace.task("t2") { |t| t.execute("t1", 1) }.call(empty_args)
       count.should eq(1)
     end
 
     it "accepts hash" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
       namespace.task("t2") { |t| t.execute("t1", {"count" => 2}) }.call(empty_args)
       count.should eq(2)
     end
 
     it "accepts arg object" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
       namespace.task("t2") { |t, args| t.execute("t1", args) }.call(Sam::Args.new({"count" => 2}))
       count.should eq(2)
     end
 
     it "accepts hash and array" do
       count = 0
-      namespace.task("t1") { |t, args| count += args["count"].as(Int32) + args[0].as(Int32) }
+      namespace.task("t1") { |_, args| count += args["count"].as(Int32) + args[0].as(Int32) }
       namespace.task("t2") { |t| t.execute("t1", {"count" => 2}, [1]) }.call(empty_args)
       count.should eq(3)
     end

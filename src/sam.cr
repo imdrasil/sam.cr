@@ -1,6 +1,8 @@
 require "./sam/*"
 
 module Sam
+  extend Execution
+
   # Task separation symbol used in command line.
   TASK_SEPARATOR = "@"
 
@@ -25,38 +27,21 @@ module Sam
     @@root_namespace.task(name, dependencies, &block)
   end
 
-  def self.invoke(name)
-    invoke(name, Args.new)
-  end
-
-  def self.invoke(name, args : Args)
-    t = find(name)
-    raise "Task #{name} was not found" unless t
-
-    t.not_nil!.call(args)
-  end
-
-  def self.invoke(name, args : Array(String))
-    t = find(name)
-    raise "Task #{name} was not found" unless t
-
-    t.not_nil!.call(Args.new(args))
-  end
-
-  def self.find(path)
+  def self.find(path : String)
     @@root_namespace.find(path)
   end
 
-  def self.find!(path)
-    @@root_namespace.find(path).not_nil!
+  def self.invoke(name, args : Array(String))
+    invoke(name, Args.new(args))
   end
 
   def self.help
-    if ARGV.size > 0
-      process_tasks(ARGV)
-    else
-      puts "Hm, nothing to do..."
-    end
+    return puts "Hm, nothing to do..." if ARGV.empty?
+
+    process_tasks(ARGV.clone)
+  rescue e : NotFound
+    puts e.message
+    exit 1
   rescue e
     puts e.backtrace.join("\n"), e
     exit 1
@@ -64,22 +49,12 @@ module Sam
 
   # :nodoc:
   def self.process_tasks(args)
-    separator_indexes = args.map_with_index { |a, i| i if a == TASK_SEPARATOR }.compact
-    sets = [] of Array(String)
-    previous_index = 0
-    separator_indexes.each do |i|
-      sets << args[previous_index...i]
-      previous_index = i + 1
-    end
-    sets << args[previous_index..-1]
-
-    sets.each do |set|
-      Sam.invoke(set[0], set[1..-1])
+    while (definition = read_task(args))
+      invoke(*definition)
     end
   end
 
   def self.pretty_print
-    descs = [] of String
     tasks = @@root_namespace.all_tasks
     paths = tasks.map(&.path)
     max_length = paths.map(&.size).max
@@ -113,6 +88,16 @@ module Sam
     end
   end
 
+  private def self.read_task(args : Array(String))
+    return if args.empty?
+
+    args.shift if args[0] == TASK_SEPARATOR
+    task = args.shift
+    task_args = args.take_while { |argument| argument != TASK_SEPARATOR }
+    args.shift(task_args.size)
+    {task, task_args}
+  end
+
   private def self.makefile_template(sam_path, delimiter)
     <<-MAKEFILE
     #{delimiter}
@@ -121,12 +106,10 @@ module Sam
     SAM_PATH ?= "#{sam_path}"
     .PHONY: sam
     sam:
-    \t$(CRYSTAL_BIN) run $(SAM_PATH) -- $(filter-out $@,$(MAKECMDGOALS))
+    \t$(CRYSTAL_BIN) $(SAM_PATH) $(filter-out $@,$(MAKECMDGOALS))
     %:
     \t@:
     #{delimiter}\n
     MAKEFILE
   end
 end
-
-require "./sam/task"

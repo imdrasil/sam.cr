@@ -48,7 +48,7 @@ describe Sam do
 
       context "with arguments" do
         it "executes them and pass arguments" do
-          Sam.process_tasks(["db:schema", "@", "db:with_argument", "f1=2"])
+          Sam.process_tasks(["db:schema", "1", "@", "db:with_argument", "f1=2"])
           Container.tasks.should eq(["db:schema", "db:with_argument"])
         end
       end
@@ -63,7 +63,7 @@ describe Sam do
           SAM_PATH ?= "src/sam.cr"
           .PHONY: sam
           sam:
-          \t$(CRYSTAL_BIN) run $(SAM_PATH) -- $(filter-out $@,$(MAKECMDGOALS))
+          \t$(CRYSTAL_BIN) $(SAM_PATH) $(filter-out $@,$(MAKECMDGOALS))
           %:
           \t@:
           # === Sam shortcut\n

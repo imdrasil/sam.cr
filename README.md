@@ -10,7 +10,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   sam:
     github: imdrasil/sam.cr
-    version: 0.3.2
+    version: 0.4.0
 ```
 
 After executing `shards install` Sam-file will be added to the root of your project (unless you already have one).
@@ -40,10 +40,8 @@ end
 Sam does no magic with your `sam.cr` file - it is just a common `.cr` source file which allows you to recompile it with any possible code you want such amount of times you need. Therefore the most obvious way to execute any task is:
 
 ```shell
-$ crystal sam.cr -- name
+$ crystal sam.cr name
 ```
-
-> `--` here means that `name` is passed as an argument to executed file not `crystal` utility.
 
 In addition to this you are able to configure your makefile to invoke sam tasks. This allows you to use shorten variant
 
@@ -51,12 +49,10 @@ In addition to this you are able to configure your makefile to invoke sam tasks.
 $ make sam name
 ```
 
-> This solution still requires `--` in some cases - see the following section.
-
-To automatically preconfigure makefile run
+To automatically modify your Makefile run
 
 ```shell
-$ crystal sam.cr -- generate:makefile
+$ crystal sam.cr generate:makefile
 ```
 
 This will modify existing Makefile or create new one. Be careful - this will silent all nonexisting makefile tasks on invocation.
@@ -64,7 +60,7 @@ This will modify existing Makefile or create new one. Be careful - this will sil
 To see a list of all available tasks with their descriptions:
 
 ```shell
-$ crystal sam.cr -- help
+$ crystal sam.cr help
 ```
 
 #### Tasks with arguments
@@ -72,7 +68,7 @@ $ crystal sam.cr -- help
 To pass arguments to your task just list them after it's name:
 
 ```shell
-> crystal sam.cr -- name john rob ned
+$ crystal sam.cr name john rob ned
 ```
 
 They are passed to a task as a 2nd block argument.
@@ -87,14 +83,16 @@ end
 
 > Each task has own collection of arguments; only prerequisites shares with target task same `Args` instance.
 
-As was mentioned named argument also can be specified by the following ways:
+Named argument also can be specified by the following ways:
 
 - `-argument value`
 - `-argument "value with spaces"`
 - `argument=value`
 - `argument="value with spaces"`
 
-One important restriction with named arguments usage and makefile-style task invocation: `--` should be placed to explicitly specify that specified arguments belongs to compiled program not crystal compiler:
+Two important restriction with named arguments usage and makefile-style task invocation:
+
+* `--` should be placed to explicitly specify that specified named arguments belongs to task not to Makefile:
 
 ```shell
 $ make sam name john
@@ -102,10 +100,12 @@ $ # but
 $ make same name -- argument=john
 ```
 
-More than one task can be specified (even with own arguments) - just separate them by `@` symbol:
+* makefile doesn't support named arguments with `=` sign
+
+To invoke More than one task list them one by one (including their arguments) separating them with `@` symbol:
 
 ```shell
-$ crystal sam.cr -- name john @ surname argument=snow
+$ crystal sam.cr name john @ surname argument=snow
 ```
 
 #### Accessing tasks programmatically
@@ -190,7 +190,7 @@ require "./lib/lib1/tasks/sam.cr"
 Before running tests call
 
 ```shell
-$ crystal examples/sam.cr -- setup
+$ crystal examples/sam.cr setup
 ```
 
 ## Contributing
