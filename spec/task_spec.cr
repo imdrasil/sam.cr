@@ -45,13 +45,15 @@ describe Sam::Task do
         end
         arr.empty?.should eq(true)
       end
+
       it "invokes dependencies with arguments" do
         count = 0
-        namespace.task("t1") { |t, args|
-          count += args[0].as(Int32) 
-          count += args["count"].as(Int32) }
-        namespace.task("t2", ["t1"]) { |t, args| 
-          count += 1}.call(Sam::Args.new({"count" => 1}, [1]))
+        namespace.task("t1") do |_, args|
+          count += args[0].as(Int32)
+          count += args["count"].as(Int32)
+        end
+        namespace.task("t2", ["t1"]) { count += 1 }
+          .call(Sam::Args.new({"count" => 1}, [1]))
         count.should eq(3)
       end
     end
