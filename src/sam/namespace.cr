@@ -50,12 +50,13 @@ module Sam
 
     def all_tasks
       tasks = @tasks.values
-      @namespaces.each { |name, n| tasks = tasks + n.all_tasks }
+      @namespaces.each { |_, namespace| tasks = tasks + namespace.all_tasks }
       tasks
     end
 
     def find(path : String)
       raise ArgumentError.new("Path can't be empty") if path.empty?
+
       find(path.split(":"))
     end
 
