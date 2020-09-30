@@ -102,7 +102,7 @@ Sam.namespace "db" do
       puts "1"
     end
 
-    task "2", ["1", "db:migrate"] do |t, args|
+    task "2", ["1", "db:migrate"] do |_, args|
       puts args.named["f2"].as(Int32) + 3
     end
   end
@@ -117,4 +117,5 @@ Sam.namespace "db" do
     puts "ping"
   end
 end
+
 Sam.help
