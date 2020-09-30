@@ -52,6 +52,12 @@ describe Sam do
           Container.tasks.should eq(["db:schema", "db:with_argument"])
         end
       end
+      context "with arguments" do
+        it "ignores dependencies that have a ~" do
+          Sam.process_tasks(["db:schema:2", "~db:schema:1", "f2=2"])
+          Container.tasks.should eq(["db:db:migrate"])
+        end
+      end
     end
   end
 

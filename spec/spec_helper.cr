@@ -46,6 +46,9 @@ namespace "db" do
       puts "1"
       Container.add("db:schema:1")
     end
+
+    task "2", ["1", "db:db:migrate"] do |t, args|
+    end
   end
 
   task "with_argument" do |t, args|

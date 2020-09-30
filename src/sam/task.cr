@@ -31,6 +31,7 @@ module Sam
 
     # Launch current task. Prerequisites are invoked first.
     def call(args : Args)
+      return if args.raw.find {|x| "~#{path}".index(x.to_s) }
       @invoked = true
       case @block.arity
       when 0, 1
