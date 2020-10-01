@@ -24,6 +24,7 @@ end
 
 Spec.before_each do
   Container.clear
+  Sam.root_namespace.all_tasks.each(&.reenable)
 end
 
 # Tasks
