@@ -10,7 +10,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   sam:
     github: imdrasil/sam.cr
-    version: 0.4.0
+    version: 0.4.1
 ```
 
 After executing `shards install` Sam-file will be added to the root of your project (unless you already have one).

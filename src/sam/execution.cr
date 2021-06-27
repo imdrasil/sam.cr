@@ -1,4 +1,3 @@
-
 require "./exceptions"
 
 module Sam
