@@ -33,7 +33,9 @@ module Sam
       @description || ""
     end
 
-    # Launch current task. Prerequisites are invoked first.
+    # Launch current task.
+    #
+    # Prerequisites are invoked before target task.
     def call(args : Args)
       @invoked = true
       case @block.arity
@@ -44,6 +46,7 @@ module Sam
       else
         raise "Wrong task block arity - #{@block.arity} and maximum is 2."
       end
+
       case @block.arity
       when 0
         @block.as(-> Void).call

@@ -8,14 +8,14 @@ describe Sam::ShellTable do
       namespace = Sam::Namespace.new("name", nil)
       Sam::ShellTable.new([
         Sam::Task.new(
-          -> {},
+          ->{},
           %w[],
           namespace,
           "short_name",
           "but very long description, such long that it requires multiple lines to be written"
         ),
         Sam::Task.new(
-          -> {},
+          ->{},
           %w[],
           namespace,
           "very_long_task_name_such_long_that_it_requires_multiple_lines_to_be_written",

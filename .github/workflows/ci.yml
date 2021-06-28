@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+
+    env:
+      TERM: xterm-256color
+
+    steps:
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1
+
+      - name: Donwload sources
+        uses: actions/checkout@v2
+
+      - name: Check formatting
+        run: crystal tool format --check
+
+      - name: Install dependencies
+        run: shards install
+
+      - name: Run linter
+        run: ./bin/ameba
+
+      - name: Setup environment
+        run: crystal examples/sam.cr setup
+
+      - name: Run specs
+        run: crystal spec

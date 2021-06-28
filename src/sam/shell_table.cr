@@ -53,9 +53,9 @@ module Sam
         [
           [
             tasks.map(&.path.size).max,
-            clean_width * min_content_width_ratio
+            clean_width * min_content_width_ratio,
           ].max,
-          clean_width * max_content_width_ration
+          clean_width * max_content_width_ration,
         ].min.to_i.as(Int32)
     end
 

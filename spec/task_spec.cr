@@ -95,21 +95,21 @@ describe Sam::Task do
     it "accepts no arguments" do
       count = 0
       namespace.task("t1") { count += 1 }
-      namespace.task("t2") { |t| t.invoke("t1") }.call(empty_args)
+      namespace.task("t2", &.invoke("t1")).call(empty_args)
       count.should eq(1)
     end
 
     it "accepts tuple at the end" do
       count = 0
       namespace.task("t1") { |_, args| count += args[0].as(Int32) }
-      namespace.task("t2") { |t| t.invoke("t1", 1) }.call(empty_args)
+      namespace.task("t2", &.invoke("t1", 1)).call(empty_args)
       count.should eq(1)
     end
 
     it "accepts hash" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
-      namespace.task("t2") { |t| t.invoke("t1", {"count" => 2}) }.call(empty_args)
+      namespace.task("t2", &.invoke("t1", {"count" => 2})).call(empty_args)
       count.should eq(2)
     end
 
@@ -123,14 +123,14 @@ describe Sam::Task do
     it "accepts hash and array" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) + args[0].as(Int32) }
-      namespace.task("t2") { |t| t.invoke("t1", {"count" => 2}, [1]) }.call(empty_args)
+      namespace.task("t2", &.invoke("t1", {"count" => 2}, [1])).call(empty_args)
       count.should eq(3)
     end
 
     it "ignores invoked tasks" do
       count = 0
       namespace.task("t1") { count += 1 }
-      namespace.task("t2", ["t1"]) { |t| t.invoke("t1") }.call(empty_args)
+      namespace.task("t2", ["t1"], &.invoke("t1")).call(empty_args)
       count.should eq(1)
     end
   end
@@ -139,21 +139,21 @@ describe Sam::Task do
     it "accepts no arguments" do
       count = 0
       namespace.task("t1") { count += 1 }
-      namespace.task("t2") { |t| t.execute("t1") }.call(empty_args)
+      namespace.task("t2", &.execute("t1")).call(empty_args)
       count.should eq(1)
     end
 
     it "accepts tuple at the end" do
       count = 0
       namespace.task("t1") { |_, args| count += args[0].as(Int32) }
-      namespace.task("t2") { |t| t.execute("t1", 1) }.call(empty_args)
+      namespace.task("t2", &.execute("t1", 1)).call(empty_args)
       count.should eq(1)
     end
 
     it "accepts hash" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
-      namespace.task("t2") { |t| t.execute("t1", {"count" => 2}) }.call(empty_args)
+      namespace.task("t2", &.execute("t1", {"count" => 2})).call(empty_args)
       count.should eq(2)
     end
 
@@ -167,14 +167,14 @@ describe Sam::Task do
     it "accepts hash and array" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) + args[0].as(Int32) }
-      namespace.task("t2") { |t| t.execute("t1", {"count" => 2}, [1]) }.call(empty_args)
+      namespace.task("t2", &.execute("t1", {"count" => 2}, [1])).call(empty_args)
       count.should eq(3)
     end
 
     it "ignores invoked tasks" do
       count = 0
       namespace.task("t1") { count += 1 }
-      namespace.task("t2", ["t1"]) { |t| t.execute("t1") }.call(empty_args)
+      namespace.task("t2", ["t1"], &.execute("t1")).call(empty_args)
       count.should eq(2)
     end
   end
