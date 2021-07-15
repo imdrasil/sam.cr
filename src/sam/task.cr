@@ -37,6 +37,7 @@ module Sam
     #
     # Prerequisites are invoked before target task.
     def call(args : Args)
+      return if args.raw.find {|x| "~#{path}" == x }
       @invoked = true
       case @block.arity
       when 0, 1

@@ -63,6 +63,12 @@ To see a list of all available tasks with their descriptions:
 $ crystal sam.cr help
 ```
 
+To skip a task or prerequisite task:
+
+```shell
+$ crystal sam.cr name ~prereq2
+```
+
 #### Tasks with arguments
 
 To pass arguments to your task just list them after it's name:
