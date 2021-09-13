@@ -3,6 +3,8 @@ require "./sam/*"
 module Sam
   extend Execution
 
+  VERSION = "0.4.2"
+
   # Task separation symbol used in command line.
   TASK_SEPARATOR = "@"
 
