@@ -8,7 +8,7 @@ module Sam
     getter tasks : Array(Task), width : Int32
 
     def initialize(@tasks)
-      @width = `tput cols`.to_i
+      @width = terminal_width
     end
 
     def generate
@@ -16,6 +16,26 @@ module Sam
         write_header(io)
         tasks.each { |task| write_task(io, task) }
       end
+    end
+
+    private def terminal_width
+      if has_tput?
+        `tput cols`.to_i
+      elsif has_stty?
+        `stty size`.chomp.split(' ')[1].to_i
+      else
+        80
+      end
+    end
+
+    private def has_tput?
+      !`which tput`.empty?
+    end
+
+    private def has_stty?
+      return false if `which stty`.empty?
+
+      /\d* \d*/.matches?(`stty size`)
     end
 
     private def write_header(io)
@@ -59,7 +79,7 @@ module Sam
         ].min.to_i.as(Int32)
     end
 
-    def description_column_width
+    private def description_column_width
       @description_column_width ||= (clean_width - name_column_width).as(Int32)
     end
 

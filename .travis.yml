@@ -1,6 +1,0 @@
-language: crystal
-env:
-  - TERM=xterm-256color
-before_script:
-  - crystal examples/sam.cr setup
-script: ./bin/ameba && crystal spec
