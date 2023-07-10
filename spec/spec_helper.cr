@@ -4,6 +4,8 @@ require "../src/sam"
 load_dependencies "lib1"
 load_dependencies "lib2": "special", "lib3": ["/special"]
 
+# Helpers
+
 class Container
   @@executed_tasks = [] of String
 
@@ -18,6 +20,13 @@ class Container
   def self.clear
     @@executed_tasks.clear
   end
+end
+
+def execute(command, options)
+  io = IO::Memory.new
+
+  status = Process.run("#{command} \"${@}\"", options, shell: true, output: io, error: io).exit_status
+  {status, io.to_s}
 end
 
 # Callbacks

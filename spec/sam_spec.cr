@@ -1,17 +1,17 @@
 require "./spec_helper"
 
 describe Sam do
-  describe "::namespace" do
+  describe ".namespace" do
     pending "add" do
     end
   end
 
-  describe "::task" do
+  describe ".task" do
     pending "add" do
     end
   end
 
-  describe "::invoke" do
+  describe ".invoke" do
     it "raises error if given task is not exists" do
       expect_raises(Exception, "Task giberrish was not found") do
         Sam.invoke("giberrish")
@@ -19,18 +19,40 @@ describe Sam do
     end
   end
 
-  describe "::find" do
+  describe ".find" do
     it "finds correct task by path" do
       Sam.find!("db:schema:load").name.should eq("load")
     end
   end
 
-  describe "::help" do
-    pending "add" do
+  describe ".help" do
+    it "with multiple tasks" do
+      res = execute("crystal examples/sam.cr", ["db:with_argument", "f1=a", "@", "db:ping"])
+      res[1].should eq(<<-TEXT)
+      a
+      ping
+
+      TEXT
+    end
+
+    it "without a specified task but with a default task defined" do
+      res = execute("crystal examples/with_default.cr", %w[])
+      res[1].should eq(<<-TEXT)
+      this is by default
+
+      TEXT
+    end
+
+    it "without a specified task and without a default task defined" do
+      res = execute("crystal examples/sam.cr", %w[])
+      res[1].should eq(<<-TEXT)
+      Hm, nothing to do...
+
+      TEXT
     end
   end
 
-  describe "::process_tasks" do
+  describe ".process_tasks" do
     context "one task" do
       it "executes given task" do
         Sam.process_tasks(["db:schema"])

@@ -1,7 +1,7 @@
 module Sam
   # Task definition DSL. Delegates all calls to `Sam` itself.
   module DSL
-    def namespace(name : String)
+    def namespace(name : String, &)
       namespace = Sam.root_namespace.touch_namespace(name)
       with namespace yield
     end
@@ -40,5 +40,3 @@ module Sam
     end
   end
 end
-
-include Sam::DSL
