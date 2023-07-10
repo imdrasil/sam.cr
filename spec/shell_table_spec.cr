@@ -3,7 +3,8 @@ require "./spec_helper"
 describe Sam::ShellTable do
   describe "#generate" do
     it "generates correct table" do
-      fail "terminal should has width 80" if `tput cols`.to_i != 80
+      cols = `tput cols`.to_i
+      fail "terminal should have width 80, got #{cols}" if cols != 80
 
       namespace = Sam::Namespace.new("name", nil)
       Sam::ShellTable.new([
