@@ -10,7 +10,7 @@ Add this to your application's `shard.yml`:
 dependencies:
   sam:
     github: imdrasil/sam.cr
-    version: 0.4.2
+    version: 0.5.0
 ```
 
 After executing `shards install` Sam-file will be added to the root of your project (unless you already have one).
@@ -61,6 +61,19 @@ To see a list of all available tasks with their descriptions:
 
 ```shell
 $ crystal sam.cr help
+```
+
+If you pass no arguments - the task `"default"` will be invoked.
+
+```crystal
+task "default" do
+  puts "Hi"
+end
+```
+
+```shell
+$ crystal sam.cr
+Hi
 ```
 
 #### Tasks with arguments

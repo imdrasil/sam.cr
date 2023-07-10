@@ -59,8 +59,8 @@ module Sam
       end
     end
 
-    def find(name : String)
-      @parent.find(name)
+    def find(path : String)
+      @parent.find(path)
     end
   end
 end

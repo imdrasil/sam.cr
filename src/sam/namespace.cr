@@ -10,12 +10,9 @@ module Sam
     end
 
     def path
-      if @parent
-        @parent.not_nil!.path + @name + ":"
-      else
-        # this is a root namespace
-        ""
-      end
+      return "" if @parent.nil? # NOTE: this is a root namespace
+
+      @parent.as(Namespace).path + @name + ":"
     end
 
     # Sets description to the next defined task.
@@ -24,7 +21,7 @@ module Sam
     end
 
     # Defines nested namespace.
-    def namespace(name)
+    def namespace(name, &)
       with touch_namespace(name) yield
       @namespaces[name]
     end

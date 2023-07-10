@@ -3,7 +3,8 @@ require "./sam/*"
 module Sam
   extend Execution
 
-  VERSION = "0.4.2"
+  VERSION           = "0.5.0"
+  DEFAULT_TASK_NAME = "default"
 
   # Task separation symbol used in command line.
   TASK_SEPARATOR = "@"
@@ -15,7 +16,7 @@ module Sam
     @@root_namespace
   end
 
-  def self.namespace(name : String)
+  def self.namespace(name : String, &)
     n = @@root_namespace.touch_namespace(name)
     with n yield
   end
@@ -38,9 +39,10 @@ module Sam
   end
 
   def self.help
-    return puts "Hm, nothing to do..." if ARGV.empty?
+    return process_tasks(ARGV.clone) unless ARGV.empty?
+    return invoke(DEFAULT_TASK_NAME) if find(DEFAULT_TASK_NAME)
 
-    process_tasks(ARGV.clone)
+    puts "Hm, nothing to do..."
   rescue e : NotFound
     puts e.message
     exit 1
@@ -51,7 +53,7 @@ module Sam
 
   # :nodoc:
   def self.process_tasks(args)
-    while (definition = read_task(args))
+    while definition = read_task(args)
       invoke(*definition)
     end
   end
@@ -65,4 +67,10 @@ module Sam
     args.shift(task_args.size)
     {task, task_args}
   end
+end
+
+include Sam::DSL
+
+at_exit do
+  Sam.help
 end

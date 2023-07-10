@@ -1,3 +1,5 @@
+#!/bin/crystal
+
 require "../src/sam"
 require "file_utils"
 
@@ -5,7 +7,7 @@ class Container
   def self.add(a); end
 end
 
-Sam.task "setup" do
+task "setup" do
   lib1 = "./lib/lib1/src/lib1"
   lib2 = "./lib/lib2/src/lib2"
   lib3 = "./lib/lib3/src/lib3"
@@ -78,11 +80,11 @@ Sam.task "setup" do
   )
 end
 
-Sam.task "clear" do
+task "clear" do
   FileUtils.rm_r("./lib")
 end
 
-Sam.namespace "db" do
+namespace "db" do
   namespace "schema" do
     desc "just test"
     task "load" do |t, args|
@@ -116,6 +118,8 @@ Sam.namespace "db" do
   task "ping" do
     puts "ping"
   end
-end
 
-Sam.help
+  task "with_argument" do |_, args|
+    puts args["f1"]
+  end
+end
