@@ -1,4 +1,4 @@
-#!/bin/crystal
+#!/usr/bin/env crystal
 
 require "sam"
 
