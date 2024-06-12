@@ -29,13 +29,21 @@ module Sam
     end
 
     private def has_tput?
-      !`which tput`.empty?
+      {% if flag?(:win32) %}
+        false
+      {% else %}
+        !`which tput`.empty?
+      {% end %}
     end
 
     private def has_stty?
-      return false if `which stty`.empty?
+      {% if flag?(:win32) %}
+        false
+      {% else %}
+        return false if `which stty`.empty?
 
-      /\d* \d*/.matches?(`stty size`)
+        /\d* \d*/.matches?(`stty size`)
+      {% end %}
     end
 
     private def write_header(io)
