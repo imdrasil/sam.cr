@@ -1,5 +1,13 @@
 require "./task"
 
+{% if flag?(:win32) %}
+  require "lib_c"
+  
+  lib LibC
+    fun GetConsoleScreenBufferInfo(handle : UInt32, info : UInt8*) : Int32
+  end
+{% end %}
+
 module Sam
   # :nodoc:
   class ShellTable
@@ -19,17 +27,29 @@ module Sam
     end
 
     private def terminal_width
-      if has_tput?
-        `tput cols`.to_i
-      elsif has_stty?
-        `stty size`.chomp.split(' ')[1].to_i
-      else
-        80
-      end
+      {% if flag?(:win32) %}
+        get_windows_width
+      {% else %}
+        if has_tput?
+          `tput cols`.to_i
+        elsif has_stty?
+          `stty size`.chomp.split(' ')[1].to_i
+        else
+          80
+        end
+      {% end %}
     end
 
-    private def has_tput?
-      !`which tput`.empty?
+    private def get_windows_width : Int32
+      handle = LibC.GetStdHandle(-12).address.to_u32
+      csbi = Bytes.new(22)
+      
+      return 80 unless LibC.GetConsoleScreenBufferInfo(handle, csbi.to_unsafe) != 0
+      
+      right = csbi[14].to_i32 | (csbi[15].to_i32 << 8)
+      left = csbi[10].to_i32 | (csbi[11].to_i32 << 8)
+      
+      right - left + 1
     end
 
     private def has_stty?
