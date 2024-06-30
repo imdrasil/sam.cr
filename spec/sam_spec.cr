@@ -1,5 +1,7 @@
 require "./spec_helper"
 
+executable = "crystal #{File.join("examples", "sam.cr")}"
+
 describe Sam do
   describe ".namespace" do
     pending "add" do
@@ -27,7 +29,7 @@ describe Sam do
 
   describe ".help" do
     it "with multiple tasks" do
-      res = execute("crystal examples/sam.cr", ["db:with_argument", "f1=a", "@", "db:ping"])
+      res = execute(executable, ["db:with_argument", "f1=a", "@", "db:ping"])
       res[1].should eq(<<-TEXT)
       a
       ping
@@ -44,7 +46,7 @@ describe Sam do
     end
 
     it "without a specified task and without a default task defined" do
-      res = execute("crystal examples/sam.cr", %w[])
+      res = execute(executable, %w[])
       res[1].should eq(<<-TEXT)
       Hm, nothing to do...
 

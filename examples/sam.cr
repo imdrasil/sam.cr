@@ -87,16 +87,16 @@ end
 namespace "db" do
   namespace "schema" do
     desc "just test"
-    task "load" do |t, args|
+    task "load" do |task, args|
       puts args["f1"]
-      t.invoke("1")
-      t.invoke("schema:1")
-      t.invoke("db:migrate")
-      t.invoke("db:db:migrate")
-      t.invoke("db:ping")
-      t.invoke("din:dong")
+      task.invoke("1")
+      task.invoke("schema:1")
+      task.invoke("db:migrate")
+      task.invoke("db:db:migrate")
+      task.invoke("db:ping")
+      task.invoke("din:dong")
       puts "------"
-      t.invoke("2", {"f2" => 1})
+      task.invoke("2", {"f2" => 1})
     end
 
     desc "1"
