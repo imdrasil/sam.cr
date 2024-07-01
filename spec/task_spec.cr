@@ -116,7 +116,7 @@ describe Sam::Task do
     it "accepts arg object" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
-      namespace.task("t2") { |t, args| t.invoke("t1", args) }.call(Sam::Args.new({"count" => 2}))
+      namespace.task("t2") { |task, args| task.invoke("t1", args) }.call(Sam::Args.new({"count" => 2}))
       count.should eq(2)
     end
 
@@ -160,7 +160,7 @@ describe Sam::Task do
     it "accepts arg object" do
       count = 0
       namespace.task("t1") { |_, args| count += args["count"].as(Int32) }
-      namespace.task("t2") { |t, args| t.execute("t1", args) }.call(Sam::Args.new({"count" => 2}))
+      namespace.task("t2") { |task, args| task.execute("t1", args) }.call(Sam::Args.new({"count" => 2}))
       count.should eq(2)
     end
 

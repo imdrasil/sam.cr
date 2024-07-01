@@ -25,7 +25,12 @@ end
 def execute(command, options)
   io = IO::Memory.new
 
-  status = Process.run("#{command} \"${@}\"", options, shell: true, output: io, error: io).exit_status
+  status =
+    {% if flag?(:win32) %}
+      Process.run("#{command} \"${@}\"", options, output: io, error: io)
+    {% else %}
+      Process.run("#{command} \"${@}\"", options, shell: true, output: io, error: io)
+    {% end %}.exit_status
   {status, io.to_s}
 end
 
@@ -40,16 +45,16 @@ end
 
 namespace "db" do
   namespace "schema" do
-    task "load" do |t, args|
+    task "load" do |task, args|
       puts args["f1"]
-      t.invoke("1")
-      t.invoke("schema:1")
-      t.invoke("db:migrate")
-      t.invoke("db:db:migrate")
-      t.invoke("db:ping")
-      t.invoke("din:dong")
-      t.invoke("schema")
-      Container.add(t.path)
+      task.invoke("1")
+      task.invoke("schema:1")
+      task.invoke("db:migrate")
+      task.invoke("db:db:migrate")
+      task.invoke("db:ping")
+      task.invoke("din:dong")
+      task.invoke("schema")
+      Container.add(task.path)
     end
 
     task "1" do
@@ -58,9 +63,9 @@ namespace "db" do
     end
   end
 
-  task "with_argument" do |t, args|
+  task "with_argument" do |task, args|
     puts args["f1"]
-    Container.add(t.path)
+    Container.add(task.path)
   end
 
   task "schema" do
